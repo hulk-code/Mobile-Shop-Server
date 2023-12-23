@@ -49,9 +49,10 @@ async function run() {
     //add to card data 
     app.post('/addToCart',async(req,res) =>{
 
-      const {name, type, processor, memory, OS, price, img} = req.body;
+      const {name, type, processor, memory, OS, price,email, img} = req.body;
       const document = {
         _id :new ObjectId(),
+        email,
         name,
         img,
         type,
@@ -66,12 +67,25 @@ async function run() {
     })
 
     
-    app.get('/addToCart', async (req, res) => {
-      const result = await addToCartCollection.find().toArray();
-      res.send(result);
+  //   app.get('/addToCart', async (req, res) => {
+  //     const result = await addToCartCollection.find().toArray();
+  //     res.send(result);
+  // })
+
+  app.get('/addToCart',async(req, res)=>{
+    const email = req.query.email;
+    console.log(email);
+    const query = { email : email}
+    const result = await addToCartCollection.find(query).toArray();
+    res.send(result);
   })
 
-
+  app.delete('/addTocart/:id',async(req,res)=>{
+    const id = req.params.id;
+    const query = {_id: new ObjectId(id)};
+    const result = await addToCartCollection.deleteOne(query);
+    res.send(result);
+    })
 
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
