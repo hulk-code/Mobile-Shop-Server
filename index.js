@@ -2,7 +2,7 @@ const express=require('express')
 
 const cors=require('cors')
 require('dotenv').config();
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const app=express();
 const port=process.env.PORT||5000
 app.use(cors())
@@ -27,12 +27,46 @@ async function run() {
     // await client.connect();
 
     const allPhoneCollection=client.db('PhoneShop').collection('AllPhoneData')
+    const addToCartCollection=client.db('PhoneShop').collection('addToCartData');
 
 
     app.get('/phones', async (req, res) => {
         const result = await allPhoneCollection.find().toArray();
         res.send(result);
     })
+
+   //data lode by specific id
+    app.get('/phonesDetails/:id' , async(req ,res)=>{
+      const id=req .params.id;
+      const query={
+        _id:new ObjectId(id)
+
+      }
+      const result=await allPhoneCollection.findOne(query)
+      res.send(result)
+    })
+    
+    //add to card data 
+    app.post('/addToCart',async(req,res) =>{
+
+      const {name, type, processor, memory, OS, price, img} = req.body;
+      const document = {
+        _id :new ObjectId(),
+        name,
+        img,
+        type,
+        processor,
+        memory,
+        OS,
+        price,
+      
+      }
+      const result = await addToCartCollection.insertOne(document);
+      res.send(result);
+    })
+
+
+
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
     console.log("Pinged your deployment. You successfully connected to MongoDB!");
