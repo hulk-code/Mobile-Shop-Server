@@ -65,6 +65,12 @@ async function run() {
       res.send(result);
     })
 
+    
+    app.get('/addToCart', async (req, res) => {
+      const result = await addToCartCollection.find().toArray();
+      res.send(result);
+  })
+
 
 
     // Send a ping to confirm a successful connection
